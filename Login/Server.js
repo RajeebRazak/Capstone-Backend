@@ -2,12 +2,15 @@ const express = require('express');
 const  bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
+const path = require('path');
+const collections = require('./config');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
-// Connect to MongoDB (Make sure you have MongoDB installed and running)
-mongoose.connect('mongodb://localhost:27017/your_database_name', { useNewUrlParser: true, useUnifiedTopology: true });
+// Use EJS as view engine
+app.set('view engine', 'ejs');
+
 
 // Create a user model
 const User = mongoose.model('User', {
@@ -21,12 +24,19 @@ const User = mongoose.model('User', {
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
+//Enable  CORS
+app.use(cors({
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+}));
+
 // Register endpoint
 app.post('/api/register',async (req, res) => {
     try {
-        //Hash the password before saving it to the database
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+       //Hash the password before saving it to the database
+       const salt = await bcrypt.genSalt(10);
+       const hashedPassword = await bcrypt.hash(req.body.password, salt);
+     
       
       // create a new User
         const user = new User({
@@ -48,6 +58,7 @@ app.post('/api/register',async (req, res) => {
 });
 
 // Start the Server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const port = 5000; // Define your port
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
