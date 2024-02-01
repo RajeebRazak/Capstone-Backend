@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
-  firstName: {
+  firstname: {
      type: String,
      require: true,
      trim: true,
      min: 3,
      max: 20,
   },
-  lastName: {
+  lastname: {
      type: String,
      require: true,
      trim: true,
@@ -31,13 +31,17 @@ const userSchema = new mongoose.Schema({
      enum: ["user", "admin"],
      default: "user",
   },
-  PhoneNumber: {
+  Phonenumber: {
      type: String,
+     require: true,
+     trim: true,
+     min: 10,
+     max: 10,
   }
 },{ timestamps: true });
 //For get fullName from when we get data from database
 userSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.firstname} ${this.lastname}`;
 });
 userSchema.method({
   async authenticate(password) {
