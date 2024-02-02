@@ -1,23 +1,47 @@
-
-const user = require('../models/userschema')
+const User = require("../models/userschema");
+const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
-    const newuser = new user({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: req.body.password,
-        role: req.body.role,
-        Phonenumber: req.body.Phonenumber
-      });
-      try {
-        const user = await newuser.save();
-        res.send("User Registered Successfully");
-      } catch (error) {
-        return res.status(400).json({ error });
-      }
+  const { firstname, lastname, email, password, role, Phonenumber } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    const newUser = new User({
+      firstname,
+      lastname,
+      email,
+      password: hashedPassword,
+      role,
+      Phonenumber,
+    });
+    const user = await newUser.save();
+    res.send("User Registered Successfully");
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+};
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const foundUser = await User.findOne({ email: email });
+
+    if (!foundUser) {
+      return res.status(400).json({ error: "User not found" });
     }
+
+    const passwordsMatch = await bcrypt.compare(password, User.password);
+
+    if (!passwordsMatch) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
+
+    res.send("Login successful");
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 //     try {
 //         // Connect to MongoDB
@@ -38,9 +62,9 @@ exports.register = async (req, res) => {
 //              email,
 //              password,
 //              phoneNumber,
-             
+
 //          };
- 
+
 //         // Insert the user document into the collection
 //         await usersCollection.insertOne(newUser);
 
