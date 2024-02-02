@@ -2,17 +2,16 @@ const User = require("../models/userschema");
 const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
-  const { firstname, lastname, email, password, role, Phonenumber } = req.body;
+  const { firstname, lastname, email, password, role, PhoneNumber } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     const newUser = new User({
       firstname,
       lastname,
       email,
-      password: hashedPassword,
+      password,
       role,
-      Phonenumber,
+      PhoneNumber,
     });
     const user = await newUser.save();
     res.send("User Registered Successfully");
@@ -25,13 +24,13 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const foundUser = await User.findOne({ email: email });
+    const foundUser = await User.findOne({ email });
 
     if (!foundUser) {
       return res.status(400).json({ error: "User not found" });
     }
 
-    const passwordsMatch = await bcrypt.compare(password, User.password);
+    const passwordsMatch = await bcrypt.compare(password, foundUser.password);
 
     if (!passwordsMatch) {
       return res.status(401).json({ error: "Incorrect password" });

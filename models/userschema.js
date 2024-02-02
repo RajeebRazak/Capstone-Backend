@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
      unique: true,
      lowercase: true,
   },
-  hash_password: {
+  password: {
      type: String,
      require: true,
   },
@@ -31,21 +31,26 @@ const userSchema = new mongoose.Schema({
      enum: ["user", "admin"],
      default: "user",
   },
-  Phonenumber: {
-     type: String,
+  PhoneNumber: {
+     type: String || Number ,
      require: true,
-     trim: true,
-     min: 10,
-     max: 10,
   }
 },{ timestamps: true });
 //For get fullName from when we get data from database
+userSchema.pre('save', async function (next) {
+   const user = this;
+   if (user.isModified('password')) {
+       const salt = await bcrypt.genSalt(10);
+       user.password = await bcrypt.hash(user.password, salt);
+   }
+   next();
+});
 userSchema.virtual("fullName").get(function () {
-  return `${this.firstname} ${this.lastname}`;
-});
-userSchema.method({
-  async authenticate(password) {
-     return bcrypt.compare(password, this.hash_password);
-  },
-});
+   return `${this.firstname} ${this.lastname}`;
+ });
+// userSchema.method({
+//   async authenticate(password) {
+//      return bcrypt.compare(password, this.hash_password);
+//   },
+// });
 module.exports = mongoose.model("User", userSchema);
