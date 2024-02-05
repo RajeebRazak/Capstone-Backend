@@ -1,5 +1,6 @@
 const User = require("../models/userschema");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   const { firstname, lastname, email, password, role, PhoneNumber } = req.body;
@@ -35,8 +36,12 @@ exports.login = async (req, res) => {
     if (!passwordsMatch) {
       return res.status(401).json({ error: "Incorrect password" });
     }
-
+    const token = jwt.sign({  foundUserId : foundUser._id } ,  'your_secret_key'  , {
+      expiresIn: '1h'
+    });
+    
     res.send("Login successful");
+    res.status(200).json({ token });
   } catch (error) {
     return res.status(500).json({ error: "Internal Server Error" });
   }

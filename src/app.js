@@ -15,6 +15,7 @@ connectDB();
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/protected', protectedRoute);
 
 
 
