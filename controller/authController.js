@@ -2,7 +2,7 @@ const User = require("../models/userschema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-exports.register = async (req, res) => {
+exports.Signup = async (req, res, next) => {
   const { firstname, lastname, email, password, role, PhoneNumber } = req.body;
   try {
     
@@ -15,35 +15,67 @@ exports.register = async (req, res) => {
       PhoneNumber,
     });
     const user = await newUser.save();
-    res.send("User Registered Successfully");
-  } catch (error) {
-    return res.status(400).json({ error });
-  }
-};
+    // Create JWT token
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
 
-exports.login = async (req, res) => {
+    jwt.sign(
+      payload,
+      process.env.SECRET_KEY,
+      { expiresIn: 3600 }, // 1 hour expiration
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+        console.log("token")
+      }
+    );
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+
+   }
+    
+
+exports.login = async (req, res, next ) => {
   const { email, password } = req.body;
 
   try {
-    const foundUser = await User.findOne({ email });
-
-    if (!foundUser) {
-      return res.status(400).json({ error: "User not found" });
+    // Check if the user exists
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    const passwordsMatch = await bcrypt.compare(password, foundUser.password);
-
-    if (!passwordsMatch) {
-      return res.status(401).json({ error: "Incorrect password" });
+    // Compare entered password with hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
-    const token = jwt.sign({  foundUserId : foundUser._id } ,  'your_secret_key'  , {
-      expiresIn: '1h'
-    });
-    
-    res.send("Login successful");
-    res.status(200).json({ token });
+
+    // Create JWT token
+    const payload = {
+      user: {
+        id: user.id,
+        role: user.role,
+},
+    };
+
+    jwt.sign(
+      payload,
+      process.env.SECRET_KEY,
+      { expiresIn: 3600 }, // 1 hour expiration
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error(error.message);
+    res.status(500).send("Server Error");
   }
 };
 
@@ -82,4 +114,3 @@ exports.login = async (req, res) => {
 //         console.error('Error registering user:', error);
 //         res.status(500).json({ message: 'Error registering user' });
 //     }
-// };

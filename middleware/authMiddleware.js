@@ -1,14 +1,21 @@
+const User =require("../models/userschema");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-function verifyToken(req, res, next) {
-const token = req.header('Authorization');
-if (!token) return res.status(401).json({ error : "Access denied" });
-try {
-    const decoded = jwt.verify(token, 'your-secret-key');
-    req.foundUserId = decoded.foundUserId;
-    next();
-} catch (error) {
-    res.status(401).json ({ error : 'Invalid token '});
-}
-};
 
-module.exports = verifyToken;
+module.exports.userVerification = (req , res) => {
+    const token = req.header('x-auth-token');
+ console.log("hello",token);
+    if (!token) {
+        return res.status(401).json({ msg: 'No authentication token, authorization denied' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        req.user = decoded.user;
+
+        next();
+    } catch (error) {
+        res.status(401).json({ msg: 'Token is not valid' });
+    }
+}
+
