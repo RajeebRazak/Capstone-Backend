@@ -2,7 +2,7 @@ const User =require("../models/userschema");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-module.exports.userVerification = (req , res) => {
+module.exports.authMiddleware = (req , res , next) => {
     const token = req.header('x-auth-token');
  console.log("hello",token);
     if (!token) {

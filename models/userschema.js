@@ -48,9 +48,5 @@ userSchema.pre('save', async function (next) {
 userSchema.virtual("fullName").get(function () {
    return `${this.firstname} ${this.lastname}`;
  });
-// userSchema.method({
-//   async authenticate(password) {
-//      return bcrypt.compare(password, this.hash_password);
-//   },
-// });
+
 module.exports = mongoose.model("User", userSchema);
