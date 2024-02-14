@@ -21,3 +21,14 @@ exports.submitForm = async (req, res) => {
     }
 
 };
+
+exports.getForms = async (req , res ) => {
+
+     try {
+        const forms = await form.find();
+        res.json(forms)
+     } catch (error) {
+         console.error(error)
+         res.status(500).json ({ message : " Server error"})
+     }
+};
