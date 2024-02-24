@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectDB = require("../DB/connect");
 const authRoutes = require('../routes/authRoutes');
 const formRoutes = require("../routes/formRoutes");
+const adminRoutes = require('../Admin/adminRoutes');
 
 const app = express(); 
 
@@ -18,10 +19,14 @@ connectDB();
 // Routes
  app.use('/auth', authRoutes);
  app.use('/form', formRoutes); 
+
+ //Admin Route
+ app.use('/admin', adminRoutes);
+ app.use('/admin/login', adminRoutes);
  
 
 // Start the server
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-});
+});   
