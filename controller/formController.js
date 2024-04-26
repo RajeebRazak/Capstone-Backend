@@ -1,9 +1,11 @@
 const form = require("../models/formschema");
+const { v4 : uuidv4 } = require('uuid');
 
 exports.submitForm = async (req, res) => {
-    const { dateofbooking, categoryofvehicle, bikemodel, year, typeofservice, customerComplaints } = req.body;
+    const { dateofbooking, categoryofvehicle, bikemodel, year, typeofservice, customerComplaints, serviceId } = req.body;
     
     try {
+        const serviceId = uuidv4(); // Generate unique ID for the form
         const newForm = new form({
             dateofbooking,
             categoryofvehicle,
@@ -11,6 +13,7 @@ exports.submitForm = async (req, res) => {
             year,
             typeofservice,
             customerComplaints,
+            serviceId
         });
          await newForm.save();
 

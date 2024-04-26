@@ -19,6 +19,7 @@ exports.Signup = async (req, res, next) => {
     const payload = {
       user: {
         id: user.id,
+        role: user.role
       },
     };
 
@@ -28,8 +29,9 @@ exports.Signup = async (req, res, next) => {
       { expiresIn: 3600 }, // 1 hour expiration
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token , role : user.role });
         console.log("token")
+        console.log(role)
       }
     );
   } catch (error) {
@@ -56,11 +58,11 @@ exports.login = async (req, res, next ) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Create JWT token
+    // Create JWT token with user id and role
     const payload = {
       user: {
         id: user.id,
-        role: user.role,
+        role: user.role
 },
     };
 
@@ -70,7 +72,7 @@ exports.login = async (req, res, next ) => {
       { expiresIn: 3600 }, // 1 hour expiration
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token , role: user.role  });
       }
     );
   } catch (error) {

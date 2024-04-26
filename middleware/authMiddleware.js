@@ -12,6 +12,7 @@ module.exports.authMiddleware = (req , res , next) => {
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         req.user = decoded.user;
+        req.userRole = decoded.role; // Include the role information in the request object
 
         next();
     } catch (error) {

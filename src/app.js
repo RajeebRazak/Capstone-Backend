@@ -25,8 +25,10 @@ connectDB();
  app.use('/admin/login', adminRoutes);
  
 
+ 
+
 // Start the server
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });   

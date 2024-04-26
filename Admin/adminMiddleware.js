@@ -2,26 +2,27 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 function adminAuthenticate(req, res, next) {
-    // Assuming you have an 'Authorization' header with JWT token
     const token = req.headers.authorization;
 
-    if(!token) {
-        return res.status(401).json({message: 'Unauthorized'});
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized' });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if (err) {
-            return res.status(401).json({message : 'Unauthorized' });
+            console.error('JWT verification error:', err);
+            return res.status(500).json({ message: 'Internal server error' });
         }
 
-        // Check if the decoded token has the expected email and password
-        if (decoded.email === process.env.ADMIN_EMAIL && decoded.password === process.env.ADMIN_PASSWORD) {
-            // User is authorized, proceed to next middleware or route handler
-            req.user = decoded;
-            next();
-        } else {
-            return res.status(401).json({message : 'Unauthorized' });
+        // Perform additional checks if needed, such as database lookup for admin role
+
+        // Example of checking admin role
+        if (decoded.role !== 'admin') {
+            return res.status(401).json({ message: 'Unauthorized - not an admin' });
         }
+
+        // Continue to the next middleware if admin role is verified
+        next();
     });
 } 
 

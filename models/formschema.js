@@ -7,7 +7,8 @@ const formSchema = new mongoose.Schema({
     year: String,
     typeofservice: String,
     customerComplaints : [String],
-    status : { type : String, default : "pending" }
+    status : { type : String, enum: ['pending', 'approved'], default : "pending" }, // Using enum type
+    serviceId: String 
 });
 
 module.exports = mongoose.model("form" , formSchema);
